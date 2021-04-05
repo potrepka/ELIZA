@@ -7,8 +7,9 @@ const formatDate = (date) => {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
     };
     return date.toLocaleTimeString("en-us", options); 
 }
