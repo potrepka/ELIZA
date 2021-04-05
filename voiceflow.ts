@@ -4,10 +4,17 @@ import { LRU } from './cache';
 const api = require('./api.json');
 const url = 'https://general-runtime.voiceflow.com/interact/'
 
+export class Message {
+  type!: string;
+  voice!: string;
+  message!: string;
+  src!: string;
+}
+
 export class Voiceflow {
   url: string;
   key: string;
-  messages: string[];
+  messages: Message[];
   states: LRU<string, any>;
 
   constructor(maxStates: number = Infinity) {
@@ -40,8 +47,8 @@ export class Voiceflow {
     axios.post(this.url, data, config).then((response) => {
       this.setState(userID, response.data.state);
       for (const trace of response.data.trace) {
-        if (trace.type === 'speak') {
-          this.pushMessage(trace.payload.message);
+        if (trace.type === 'speak' && trace.payload.type === 'message') {
+          this.pushMessage(trace.payload);
         }
       }
       success();
@@ -50,8 +57,8 @@ export class Voiceflow {
     });
   }
 
-  pushMessage(message: string) {
-    this.messages.push(message);
+  pushMessage(payload: Message) {
+    this.messages.push(payload);
   }
 
   getMessages() {

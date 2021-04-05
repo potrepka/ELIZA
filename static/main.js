@@ -2,8 +2,22 @@ const userID = Math.random().toString(36).substring(7);
 
 const $chat = $('#chat');
 
+const audioQueue = [];
+const audioDelay = 200;
+
+setInterval(() => {
+  if (audioQueue.length > 0) {
+    const audio = audioQueue[0];
+    if (audio.currentTime == 0) {
+      audio.play();
+    } else if (audio.ended) {
+      audioQueue.shift();
+    }
+  }
+}, audioDelay);
+
 const preDelay = 0;
-const interDelay = 100;
+const interDelay = 0;
 
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
@@ -35,8 +49,9 @@ const addSenderMessage = (message, time = '12:00 PM | April 1') => {
 
 const addSenderMessages = async (response) => {
   await delay(preDelay);
-  for (const message of response) {
-    addSenderMessage(message, formatDate(new Date()));
+  for (const payload of response) {
+    addSenderMessage(payload.message, formatDate(new Date()));
+    audioQueue.push(new Audio(payload.src));
     await delay(interDelay);
   }
 }
@@ -56,7 +71,7 @@ const addRecieverMessage = (message, time = '12:00 PM | April 1') => {
 
 $(document).ready(async () => {
   $.ajax({
-    url: 'http://localhost:4000/start',
+    url: '/start',
     type: 'post',
     data: {
       userID
@@ -80,7 +95,7 @@ $('#message').submit(async (e) => {
   addRecieverMessage(message, formatDate(new Date()));
 
   $.ajax({
-    url: 'http://localhost:4000/message',
+    url: '/message',
     type: 'post',
     data: {
       userID,
