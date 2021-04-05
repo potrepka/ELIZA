@@ -6,12 +6,14 @@ export class Voiceflow {
     url: string;
     key: string;
     messages: string[];
+    states: { [userID: string]: any };
 
     constructor() {
         this.url = 'https://general-runtime.voiceflow.com/interact/' +
                 api.versionID;
         this.key = api.key;
         this.messages = [];
+        this.states = {};
     }
 
     start(success: () => void, userID: string) {
@@ -25,7 +27,7 @@ export class Voiceflow {
     process(success: () => void, userID: string, message: string) {
         console.log(userID + ': ' + message);
         let request = message ? { type: 'text', payload: message } : null;
-        let state = null;
+        let state = this.getState(userID);
         const data = {
             request: request,
             state: state
@@ -36,6 +38,7 @@ export class Voiceflow {
             }
         }
         axios.post(this.url, data, config).then((response) => {
+            this.states[userID] = response.data.state;
             for (const trace of response.data.trace) {
                 if (trace.type === 'speak') {
                     this.messages.push(trace.payload.message);
@@ -51,5 +54,9 @@ export class Voiceflow {
         const messages = this.messages;
         this.messages = [];
         return messages;
+    }
+
+    getState(userID: string) {
+        return this.states[userID] ? this.states[userID] : null;
     }
 }
