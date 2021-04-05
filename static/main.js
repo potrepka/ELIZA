@@ -2,6 +2,9 @@ const userID = Math.random().toString(36).substring(7);
 
 const $chat = $('#chat');
 
+const preDelay = 0;
+const interDelay = 100;
+
 const formatDate = (date) => {
     let options = {
         year: 'numeric',
@@ -30,9 +33,11 @@ const addSenderMessage = (message, time = '12:00 PM | April 1') => {
     `);
 };
 
-const addSenderMessages = (response) => {
+const addSenderMessages = async (response) => {
+    await delay(preDelay);
     for (const message of response) {
         addSenderMessage(message, formatDate(new Date()));
+        await delay(interDelay);
     }
 }
 
@@ -58,10 +63,7 @@ $.ready(async () => {
         data: {
             userID
         },
-        success: async (response) => {
-            await delay(400);
-            addSenderMessages(response);
-        },
+        success: addSenderMessages,
         error() {
             alert('Could not retrieve messages.');
         },
@@ -86,10 +88,7 @@ $('#message').submit(async (e) => {
             userID,
             message,
         },
-        success: async (response) => {
-            await delay(400);
-            addSenderMessages(response);
-        },
+        success: addSenderMessages,
         error() {
             alert('Could not retrieve messages.');
         },
