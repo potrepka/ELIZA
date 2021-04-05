@@ -14,16 +14,16 @@ export class Voiceflow {
         this.messages = [];
     }
 
-    start(userID: string) {
-        this.process(userID, '');
+    start(success: () => void, userID: string) {
+        this.process(success, userID, '');
     }
 
-    message(userID: string, message: string) {
-        this.process(userID, message);
+    message(success: () => void, userID: string, message: string) {
+        this.process(success, userID, message);
     }
 
-    process(userID: string, message: string) {
-        console.log(userID);
+    process(success: () => void, userID: string, message: string) {
+        console.log(userID + ': ' + message);
         let request = message ? { type: 'text', payload: message } : null;
         let state = null;
         const data = {
@@ -41,6 +41,7 @@ export class Voiceflow {
                     this.messages.push(trace.payload.message);
                 }
             }
+            success();
         }).catch((error) => {
             console.log(error.message);
         });
