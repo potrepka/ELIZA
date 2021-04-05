@@ -27,3 +27,5 @@ build
 sonar/
 
 .env
+
+api.json
