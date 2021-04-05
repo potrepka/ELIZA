@@ -56,7 +56,7 @@ const addRecieverMessage = (message, time = '12:00 PM | April 1') => {
 
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
-$.ready(async () => {
+$(document).ready(async () => {
     $.ajax({
         url: 'http://localhost:4000/start',
         type: 'post',
