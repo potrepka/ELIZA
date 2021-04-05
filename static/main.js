@@ -5,6 +5,8 @@ const $chat = $('#chat');
 const preDelay = 0;
 const interDelay = 100;
 
+const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
+
 const formatDate = (date) => {
     let options = {
         year: 'numeric',
@@ -51,8 +53,6 @@ const addRecieverMessage = (message, time = '12:00 PM | April 1') => {
         </div>
     `);
 };
-
-const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 $(document).ready(async () => {
     $.ajax({
