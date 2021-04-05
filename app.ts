@@ -27,15 +27,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/', (_, res) => res.sendFile(path.join(`${__dirname}/index.html`)));
 
 app.post('/start', (request, response) => {
-    voiceflow.start(() => {
-        response.send(voiceflow.getMessages());
-    }, request.body.userID);
+  voiceflow.start(() => {
+    response.send(voiceflow.getMessages());
+  }, request.body.userID);
 });
 
 app.post('/message', (request, response) => {
-    voiceflow.message(() => {
-        response.send(voiceflow.getMessages());
-    }, request.body.userID, request.body.message);
+  voiceflow.message(() => {
+    response.send(voiceflow.getMessages());
+  }, request.body.userID, request.body.message);
 });
 
 export default app;
