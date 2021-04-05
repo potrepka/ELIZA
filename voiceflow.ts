@@ -1,19 +1,21 @@
 import axios from 'axios';
 
 const api = require('./api.json');
+const url = 'https://general-runtime.voiceflow.com/interact/'
 
 export class Voiceflow {
     url: string;
     key: string;
     messages: string[];
-    states: { [userID: string]: any };
+    state: Map<string, any>;
+    maxStates: number;
 
-    constructor() {
-        this.url = 'https://general-runtime.voiceflow.com/interact/' +
-                api.versionID;
+    constructor(maxStates: number = Infinity) {
+        this.url = url + api.versionID;
         this.key = api.key;
         this.messages = [];
-        this.states = {};
+        this.state = new Map<string, any>();
+        this.maxStates = maxStates;
     }
 
     start(success: () => void, userID: string) {
@@ -37,16 +39,20 @@ export class Voiceflow {
             }
         }
         axios.post(this.url, data, config).then((response) => {
-            this.states[userID] = response.data.state;
+            this.setState(userID, response.data.state);
             for (const trace of response.data.trace) {
                 if (trace.type === 'speak') {
-                    this.messages.push(trace.payload.message);
+                    this.pushMessage(trace.payload.message);
                 }
             }
             success();
         }).catch((error) => {
             console.log(error.message);
         });
+    }
+
+    pushMessage(message: string) {
+        this.messages.push(message);
     }
 
     getMessages() {
@@ -56,6 +62,15 @@ export class Voiceflow {
     }
 
     getState(userID: string) {
-        return this.states[userID] ? this.states[userID] : null;
+        return this.state.get(userID);
+    }
+
+    setState(userID: string, state: any) {
+        if (this.state.has(userID)) {
+            this.state.delete(userID);
+        } else if (this.state.size == this.maxStates) {
+            this.state.delete(this.state.keys().next().value);
+        }
+        this.state.set(userID, state);
     }
 }
