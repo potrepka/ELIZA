@@ -3,8 +3,12 @@ import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
 
+import { Voiceflow } from './voiceflow';
+
 // load in environment variables from .env file
 dotenv.config();
+
+const voiceflow = new Voiceflow();
 
 // Create Express server
 const app = express();
@@ -22,12 +26,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
  */
 app.get('/', (_, res) => res.sendFile(path.join(`${__dirname}/index.html`)));
 
-app.post('/message', (req, res) => {
-  console.log(req.body);
+app.post('/start', (request, response) => {
+    voiceflow.start(request.body.userID);
+    response.send(voiceflow.getMessages());
+});
 
-  // TODO: implement route
-
-  res.send(['hello world!', 'goodbye']);
+app.post('/message', (request, response) => {
+    voiceflow.message(request.body.userID, request.body.message);
+    response.send(voiceflow.getMessages());
 });
 
 export default app;
