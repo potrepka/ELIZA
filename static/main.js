@@ -9,7 +9,7 @@ setInterval(() => {
   if (audioQueue.length > 0) {
     const audio = audioQueue[0];
     if (audio.currentTime == 0) {
-      audio.play();
+      audio.play().catch((error) => {});
     } else if (audio.ended) {
       audioQueue.shift();
     }
