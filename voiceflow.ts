@@ -25,7 +25,6 @@ export class Voiceflow {
     }
 
     process(success: () => void, userID: string, message: string) {
-        console.log(userID + ': ' + message);
         let request = message ? { type: 'text', payload: message } : null;
         let state = this.getState(userID);
         const data = {
